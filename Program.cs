@@ -44,6 +44,7 @@ static IHostBuilder CreateHostBuilder(string[] args)
             services.AddScoped<App>();
 
             services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
         }).ConfigureLogging((_, logging) =>
         {
             // Disable EF logs
