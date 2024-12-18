@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using OrderConsoleApp.Models;
+using OrderConsoleApp.Entities;
 
 namespace OrderConsoleApp.Data;
 

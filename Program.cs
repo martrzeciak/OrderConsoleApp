@@ -40,7 +40,9 @@ static IHostBuilder CreateHostBuilder(string[] args)
         {
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlite("Data Source=OrderAppDB.db"));
+
             services.AddScoped<App>();
+
             services.AddScoped<IProductRepository, ProductRepository>();
         }).ConfigureLogging((_, logging) =>
         {

@@ -1,4 +1,4 @@
-﻿using OrderConsoleApp.Models;
+﻿using OrderConsoleApp.Entities;
 
 namespace OrderConsoleApp.Contracts;
 

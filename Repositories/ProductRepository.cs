@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OrderConsoleApp.Contracts;
 using OrderConsoleApp.Data;
-using OrderConsoleApp.Models;
+using OrderConsoleApp.Entities;
 
 namespace OrderConsoleApp.Repositories;
 

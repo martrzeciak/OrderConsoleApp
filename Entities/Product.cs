@@ -1,4 +1,4 @@
-﻿namespace OrderConsoleApp.Models;
+﻿namespace OrderConsoleApp.Entities;
 
 public class Product
 {
