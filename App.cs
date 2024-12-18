@@ -1,13 +1,17 @@
-﻿namespace OrderConsoleApp;
+﻿using Microsoft.EntityFrameworkCore;
+using OrderConsoleApp.Data;
 
-public class App
+namespace OrderConsoleApp;
+
+public class App(AppDbContext context)
 {
-    public App()
+    public async Task Run(string[] args)
     {
-    }
+        var products = await context.Products.ToListAsync();
 
-    public void Run(string[] args)
-    {
-        Console.WriteLine("Hello world");
+        foreach (var product in products)
+        {
+            Console.WriteLine(product.Name);
+        }
     }
 }
