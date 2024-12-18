@@ -24,7 +24,7 @@ public class AppDbContext : DbContext
             new Product { Id = 2, Name = "Klawiatura", Price = 120 },
             new Product { Id = 3, Name = "Mysz", Price = 90 },
             new Product { Id = 4, Name = "Monitor", Price = 1000 },
-            new Product { Id = 5, Name = "Kaczka debuggująca", Price = 66 }
+            new Product { Id = 5, Name = "Kaczka debugująca", Price = 66 }
         );
     }
 }
