@@ -4,6 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrderConsoleApp.Data;
 using Microsoft.EntityFrameworkCore;
+using OrderConsoleApp.Contracts;
+using OrderConsoleApp.Repositories;
 
 using IHost host = CreateHostBuilder(args).Build();
 using var scope = host.Services.CreateScope();
@@ -39,6 +41,7 @@ static IHostBuilder CreateHostBuilder(string[] args)
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlite("Data Source=OrderAppDB.db"));
             services.AddScoped<App>();
+            services.AddScoped<IProductRepository, ProductRepository>();
         }).ConfigureLogging((_, logging) =>
         {
             // Disable EF logs

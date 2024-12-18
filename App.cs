@@ -1,13 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
-using OrderConsoleApp.Data;
+﻿using OrderConsoleApp.Contracts;
 
 namespace OrderConsoleApp;
 
-public class App(AppDbContext context)
+public class App(IProductRepository productRepository)
 {
     public async Task Run(string[] args)
     {
-        var products = await context.Products.ToListAsync();
+        var products = await productRepository.GetProductsAsync();
 
         foreach (var product in products)
         {
