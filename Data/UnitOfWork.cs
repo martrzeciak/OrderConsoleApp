@@ -11,6 +11,7 @@ public class UnitOfWork(AppDbContext context) : IUnitOfWork
 
     public async Task<bool> Complete()
     {
+        // Save changes and reset the change tracker
         var changesSaved = await context.SaveChangesAsync() > 0;
 
         if (changesSaved)

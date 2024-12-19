@@ -5,21 +5,23 @@ namespace OrderConsoleApp;
 
 public class App(IUnitOfWork unitOfWork, IDiscountService discountService)
 {
+    // Divider string for separating sections in console output
     private const string divider = "---------------------------------------------";
-    private bool _exit = false; // Global flag for exiting
+    // Global flag for exiting
+    private bool _exit = false;
 
-
+    // Main entry point for the application, runs the main menu
     public async Task Run(string[] args) => await MainMenu();
 
     private async Task MainMenu()
     {
         bool exitApp = false;
 
-        // Simple menu loop
+        // Simple loop that keeps the menu running until the user chooses to exit
         while (!exitApp)
         {
             _exit = false;
-            Console.Clear();
+            Console.Clear(); // Clear the console before showing the menu
             Console.WriteLine("Welcome to the Place Order App");
             Console.WriteLine("Please choose an option:");
             Console.WriteLine("1. Place an order.");
@@ -27,6 +29,7 @@ public class App(IUnitOfWork unitOfWork, IDiscountService discountService)
             Console.WriteLine("3. Exit");
             Console.Write("Enter your choice (1-3): ");
 
+            // Switch statement based on user input to navigate through options
             switch (Console.ReadLine())
             {
                 case "1": await PlaceOrder(); break;
@@ -37,6 +40,7 @@ public class App(IUnitOfWork unitOfWork, IDiscountService discountService)
         }
     }
 
+    // Handles exiting the main menu and displaying an exit message
     private void ExitMainMenu()
     {
         Console.WriteLine("Press any key to continue...");
@@ -44,16 +48,18 @@ public class App(IUnitOfWork unitOfWork, IDiscountService discountService)
         Console.WriteLine("Exiting the application...");
     }
 
+    // Allows the user to place an order by selecting products and quantities
     private async Task PlaceOrder()
     {
         var availableProducts = await unitOfWork.ProductRepository.GetProductsAsync();
-        var basket = new List<OrderItem>();
+        var basket = new List<OrderItem>(); // List to store items added to the basket
 
-        while (!_exit)
+        while (!_exit) // Loop until the user decides to exit
         {
             Console.Clear();
             Console.WriteLine("Place Order:");
 
+            // Display available products and their prices
             availableProducts.ForEach(p => Console.WriteLine($"{p.Id}. {p.Name} | Price: {p.Price} PLN"));
 
             Console.WriteLine($"{divider}\nOptions:");
@@ -62,6 +68,7 @@ public class App(IUnitOfWork unitOfWork, IDiscountService discountService)
             Console.WriteLine("3. View order summary");
             Console.Write("Enter your choice (1 to go back, 2 to add product, 3 to view summary): ");
 
+            // Switch statement for user input
             switch (Console.ReadLine())
             {
                 case "1": return;
@@ -72,10 +79,12 @@ public class App(IUnitOfWork unitOfWork, IDiscountService discountService)
         }
     }
 
+    // Adds a product to the basket
     private static void AddToBasket(List<Product> availableProducts, List<OrderItem> basket)
     {
         Console.Write("Enter product ID: ");
 
+        // Attempt to parse user input as a valid product ID
         if (int.TryParse(Console.ReadLine(), out int productId)
             && availableProducts.FirstOrDefault(p => p.Id == productId) is Product product)
         {
@@ -83,10 +92,12 @@ public class App(IUnitOfWork unitOfWork, IDiscountService discountService)
 
             if (int.TryParse(Console.ReadLine(), out int quantity) && quantity > 0)
             {
+                // If the item exists, update the quantity
                 var existingItem = basket.FirstOrDefault(i => i.ProductId == product.Id);
 
                 if (existingItem != null)
                 {
+                    // Otherwise, add a new item to the basket
                     existingItem.Quantity += quantity;
                     Console.WriteLine($"Updated {product.Name} quantity to {existingItem.Quantity}.");
                 }
@@ -110,6 +121,7 @@ public class App(IUnitOfWork unitOfWork, IDiscountService discountService)
         Console.ReadKey();
     }
 
+    // Views the current contents of the basket
     private async Task ViewBasket(List<OrderItem> basket)
     {
         while (!_exit)
@@ -117,6 +129,7 @@ public class App(IUnitOfWork unitOfWork, IDiscountService discountService)
             Console.Clear();
             Console.WriteLine("Basket Summary:");
 
+            // Check if the basket is empty
             if (basket.Count == 0)
             {
                 Console.WriteLine("Your basket is empty.");
@@ -125,6 +138,7 @@ public class App(IUnitOfWork unitOfWork, IDiscountService discountService)
                 return;
             }
 
+            // Display all items in the basket
             for (int i = 0; i < basket.Count; i++)
             {
                 var item = basket[i];
@@ -132,6 +146,7 @@ public class App(IUnitOfWork unitOfWork, IDiscountService discountService)
                     $"| Price: {item.Price} PLN | Subtotal: {item.Price * item.Quantity} PLN");
             }
 
+            // Calculate the total cost of the basket
             decimal totalCost = basket.Sum(i => i.Price * i.Quantity);
 
             Console.WriteLine($"{divider}\nTotal Cost: {totalCost} PLN");
@@ -142,26 +157,30 @@ public class App(IUnitOfWork unitOfWork, IDiscountService discountService)
             Console.WriteLine("4. View order summary");
             Console.Write("Enter your choice (1-4): ");
 
+            // Switch statement for user input
             switch (Console.ReadLine())
             {
                 case "1": return;
                 case "2": ModifyBasketItem(basket); break;
                 case "3": RemoveBasketItem(basket); break;
-                case "4": await OrderSummary(basket); break;
+                case "4": await OrderSummary(basket, totalCost); break;
                 default: Console.WriteLine("Invalid choice. Press any key to try again."); Console.ReadKey(); break;
             }
         }
     }
 
+    // Allows the user to modify the quantity of an item in the basket
     private static void ModifyBasketItem(List<OrderItem> basket)
     {
         Console.Write("Enter the item number to modify quantity: ");
 
+        // Parse user input to get the item number
         if (int.TryParse(Console.ReadLine(), out int itemNumber) && itemNumber > 0
             && itemNumber <= basket.Count)
         {
             Console.Write("Enter the new quantity: ");
 
+            // Parse user input for the new quantity
             if (int.TryParse(Console.ReadLine(), out int newQuantity) && newQuantity > 0)
             {
                 basket[itemNumber - 1].Quantity = newQuantity;
@@ -175,14 +194,16 @@ public class App(IUnitOfWork unitOfWork, IDiscountService discountService)
         Console.ReadKey();
     }
 
+    // Allows the user to remove an item from the basket
     private static void RemoveBasketItem(List<OrderItem> basket)
     {
         Console.Write("Enter the item number to remove: ");
 
+        // Parse user input to get the item number
         if (int.TryParse(Console.ReadLine(), out int removeItemNumber)
             && removeItemNumber > 0 && removeItemNumber <= basket.Count)
         {
-            basket.RemoveAt(removeItemNumber - 1);
+            basket.RemoveAt(removeItemNumber - 1); // Remove the item from the basket
             Console.WriteLine("Item removed successfully.");
         }
         else Console.WriteLine("Invalid item number. Please try again.");
@@ -191,21 +212,22 @@ public class App(IUnitOfWork unitOfWork, IDiscountService discountService)
         Console.ReadKey();
     }
 
-    private async Task OrderSummary(List<OrderItem> basket)
+    // Displays the order summary, including discounts
+    private async Task OrderSummary(List<OrderItem> basket, decimal totalCost)
     {
         while (!_exit)
         {
             Console.Clear();
             Console.WriteLine("Order Summary:");
 
-            decimal totalCost = basket.Sum(item => item.Price * item.Quantity);
-
+            // Display all items in the basket
             foreach (var item in basket)
             {
                 Console.WriteLine($"{item.ProductName} | Quantity: {item.Quantity} " +
                     $"| Price: {item.Price} PLN | Subtotal: {item.Price * item.Quantity} PLN");
             }
 
+            // Create an order object and calculate the discount
             var order = new Order()
             {
                 OrderItems = basket,
@@ -222,6 +244,7 @@ public class App(IUnitOfWork unitOfWork, IDiscountService discountService)
             Console.WriteLine("2. Place order");
             Console.Write("Enter your choice (1-2): ");
 
+            // Switch statement for user input
             switch (Console.ReadLine())
             {
                 case "1": return;
@@ -231,10 +254,12 @@ public class App(IUnitOfWork unitOfWork, IDiscountService discountService)
         }
     }
 
+    // Confirms and places the order
     private async Task ConfirmOrder(List<OrderItem> basket, Order order)
     {
         Console.WriteLine("Are you sure you want to place the order? (yes/no): ");
 
+        // Switch statement for user input
         switch (Console.ReadLine()?.Trim().ToLower())
         {
             case "yes":
@@ -246,12 +271,12 @@ public class App(IUnitOfWork unitOfWork, IDiscountService discountService)
                 Console.WriteLine("Order placed successfully!");
                 Console.WriteLine("Thank you for your purchase. Redirecting to the main menu...");
 
-                basket.Clear();
+                basket.Clear(); // Clear the basket after order is placed
 
                 Console.WriteLine("Press any key to continue.");
                 Console.ReadKey();
 
-                _exit = true;
+                _exit = true; // Exit the process
                 break;
             case "no":
                 Console.WriteLine("Order placement canceled. Returning to order summary...");
@@ -266,6 +291,7 @@ public class App(IUnitOfWork unitOfWork, IDiscountService discountService)
         }
     }
 
+    // Displays the order history to the user
     private async Task GetOrderHistory()
     {
         while (true)
@@ -273,8 +299,10 @@ public class App(IUnitOfWork unitOfWork, IDiscountService discountService)
             Console.Clear();
             Console.WriteLine("Order History:");
 
+            // Retrieve the list of orders from the repository
             var orders = await unitOfWork.OrderRepository.GetOrdersAsync();
 
+            // If no orders are found, display a message
             if (orders.Count == 0)
             {
                 Console.WriteLine("No orders found.");
@@ -283,6 +311,7 @@ public class App(IUnitOfWork unitOfWork, IDiscountService discountService)
                 return;
             }
 
+            // Display the list of orders
             for (int i = 0; i < orders.Count; i++)
             {
                 var order = orders[i];
@@ -295,17 +324,19 @@ public class App(IUnitOfWork unitOfWork, IDiscountService discountService)
             Console.WriteLine("2. View order details");
             Console.Write("Enter your choice (1-2): ");
 
+            // Switch statement for user input
             switch (Console.ReadLine())
             {
-                case "1": return;
+                case "1": return; // Go back to the main menu
                 case "2":
                     Console.Write("Enter the order number to view details: ");
 
+                    // Parse user input for the order number
                     if (int.TryParse(Console.ReadLine(), out int orderNumber) && orderNumber > 0
                         && orderNumber <= orders.Count)
                     {
                         var selectedOrder = orders[orderNumber - 1];
-                        ViewOrderDetails(selectedOrder);
+                        ViewOrderDetails(selectedOrder); // View the details of the selected order
                     }
                     else
                     {
@@ -323,6 +354,7 @@ public class App(IUnitOfWork unitOfWork, IDiscountService discountService)
         }
     }
 
+    // Displays the details of a selected order
     private static void ViewOrderDetails(Order order)
     {
         while (true)
@@ -330,9 +362,11 @@ public class App(IUnitOfWork unitOfWork, IDiscountService discountService)
             Console.Clear();
             Console.WriteLine($"Order Details\nOrder Date: {order.OrderDate:dd MMM yyyy hh:mm}\n{divider}");
 
+            // Display each item in the order
             order.OrderItems.ForEach(p => Console.WriteLine($"{p.ProductName} | Quantity: {p.Quantity} " +
                     $"| Price: {p.Price} PLN | Subtotal: {p.Price * p.Quantity} PLN"));
 
+            // Display the order's subtotal, discount, and total cost
             Console.WriteLine($"{divider}\nSubtotal: {order.Subtotal} PLN");
             Console.WriteLine($"Discount: -{order.Subtotal - order.Total} PLN");
             Console.WriteLine($"Total: {order.Total} PLN");

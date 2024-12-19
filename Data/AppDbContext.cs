@@ -18,6 +18,7 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        // Configure relationships and constraints
         modelBuilder.Entity<Order>()
             .HasMany(o => o.OrderItems)
             .WithOne(o => o.Order)

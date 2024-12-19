@@ -12,16 +12,9 @@ namespace OrderConsoleApp.Repositories
             context.Orders.Add(order);
         }
 
-        public async Task<Order?> GetOrderByIdAsync(int id)
-        {
-            return await context.Orders.FirstOrDefaultAsync(x => x.Id == id);
-        }
-
         public async Task<List<Order>> GetOrdersAsync()
         {
-
-            var orders = await context.Orders.Include(x => x.OrderItems).ToListAsync();
-            return orders;
+            return await context.Orders.Include(x => x.OrderItems).ToListAsync();
         }
 
         public async Task<List<OrderItem>> GetOrderItemsAsync()
