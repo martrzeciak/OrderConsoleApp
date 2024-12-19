@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using OrderConsoleApp;
 using OrderConsoleApp.Contracts;
 using OrderConsoleApp.Data;
+using OrderConsoleApp.Services;
 
 using IHost host = CreateHostBuilder(args).Build();
 using var scope = host.Services.CreateScope();
@@ -42,6 +43,7 @@ static IHostBuilder CreateHostBuilder(string[] args)
 
             services.AddScoped<App>();
 
+            services.AddScoped<IDiscountService, DiscountService>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
         }).ConfigureLogging((_, logging) =>
         {

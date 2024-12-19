@@ -3,7 +3,7 @@ using OrderConsoleApp.Entities;
 
 namespace OrderConsoleApp;
 
-public class App(IUnitOfWork unitOfWork)
+public class App(IUnitOfWork unitOfWork, IDiscountService discountService)
 {
     private const string divider = "---------------------------------------------";
     private bool _exit = false; // Global flag for exiting
@@ -206,28 +206,32 @@ public class App(IUnitOfWork unitOfWork)
                     $"| Price: {item.Price} PLN | Subtotal: {item.Price * item.Quantity} PLN");
             }
 
+            var order = new Order()
+            {
+                OrderItems = basket,
+                Subtotal = totalCost,
+            };
+            var discount = discountService.GetDiscount(order);
+
             Console.WriteLine("------------------------------------");
-            Console.WriteLine($"Total Cost: {totalCost} PLN");
+            Console.WriteLine($"Subtotal: {totalCost} PLN");
+            Console.WriteLine($"Discount: -{discount} PLN");
+            Console.WriteLine($"Total cost: {order.Total} PLN");
             Console.WriteLine("Options:");
             Console.WriteLine("1. Back to basket summary");
             Console.WriteLine("2. Place order");
             Console.Write("Enter your choice (1-2): ");
 
-            var input = Console.ReadLine();
-
-            switch (input)
+            switch (Console.ReadLine())
             {
                 case "1": return;
-
-                case "2":
-                    await ConfirmOrder(basket, totalCost);
-                    break;
+                case "2": await ConfirmOrder(basket, order); break;
                 default: Console.WriteLine("Invalid choice. Press any key to try again."); Console.ReadKey(); break;
             }
         }
     }
 
-    private async Task ConfirmOrder(List<OrderItem> basket, decimal totalCost)
+    private async Task ConfirmOrder(List<OrderItem> basket, Order order)
     {
         Console.WriteLine("Are you sure you want to place the order? (yes/no): ");
 
@@ -236,12 +240,6 @@ public class App(IUnitOfWork unitOfWork)
             case "yes":
                 Console.Clear();
                 // Add order to database
-                var order = new Order()
-                {
-                    OrderItems = basket,
-                    Subtotal = totalCost,
-                    Total = totalCost
-                };
                 unitOfWork.OrderRepository.Add(order);
                 await unitOfWork.Complete();
 
@@ -330,12 +328,13 @@ public class App(IUnitOfWork unitOfWork)
         while (true)
         {
             Console.Clear();
-            Console.WriteLine($"Order Details\nOrder Date: {order.OrderDate}\n{divider}");
+            Console.WriteLine($"Order Details\nOrder Date: {order.OrderDate:dd MMM yyyy hh:mm}\n{divider}");
 
             order.OrderItems.ForEach(p => Console.WriteLine($"{p.ProductName} | Quantity: {p.Quantity} " +
                     $"| Price: {p.Price} PLN | Subtotal: {p.Price * p.Quantity} PLN"));
 
             Console.WriteLine($"{divider}\nSubtotal: {order.Subtotal} PLN");
+            Console.WriteLine($"Discount: -{order.Subtotal - order.Total} PLN");
             Console.WriteLine($"Total: {order.Total} PLN");
 
             Console.WriteLine("Press any key to return to the order history menu.");
