@@ -18,7 +18,7 @@ The app interacts with a SQLite database.
   * Apply discounts based on the order's total price.
   * Apply additional discounts when all items are single-quantity items.
   * A 5% discount is applied for orders exceeding a specific price threshold.
-  * Extra discounts of 10% and 20% are applied to the second and third most expensive items when all items are single-quantity.
+  * Extra discounts of 10% and 20% are applied to the second and third most expensive items.
 
 ## Used Technologies 
 * **Entity Framework Core**: Used for ORM to manage the SQLite database.
