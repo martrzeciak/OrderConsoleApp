@@ -37,6 +37,6 @@ The app interacts with a SQLite database.
   ```
  3. Run the application:
   ```bash
-  ddotnet run
+  dotnet run
   ```
 4. The application will automatically handle the database migration when it starts.
