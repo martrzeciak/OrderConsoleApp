@@ -19,8 +19,14 @@ namespace OrderConsoleApp.Repositories
 
         public async Task<List<Order>> GetOrdersAsync()
         {
-            return await context.Orders
-                .Include(x => x.OrderItems)
+
+            var orders = await context.Orders.Include(x => x.OrderItems).ToListAsync();
+            return orders;
+        }
+
+        public async Task<List<OrderItem>> GetOrderItemsAsync()
+        {
+            return await context.OrderItems
                 .ToListAsync();
         }
     }

@@ -11,8 +11,8 @@ using OrderConsoleApp.Data;
 namespace OrderConsoleApp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241218071526_AddOrderAndOrderItemEntities")]
-    partial class AddOrderAndOrderItemEntities
+    [Migration("20241219040641_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -30,10 +30,10 @@ namespace OrderConsoleApp.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<decimal>("Subtotal")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("Total")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -46,11 +46,11 @@ namespace OrderConsoleApp.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("OrderId")
+                    b.Property<int>("OrderId")
                         .HasColumnType("INTEGER");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("INTEGER");
@@ -80,7 +80,7 @@ namespace OrderConsoleApp.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -114,16 +114,20 @@ namespace OrderConsoleApp.Migrations
                         new
                         {
                             Id = 5,
-                            Name = "Kaczka debuggująca",
+                            Name = "Kaczka debugująca",
                             Price = 66m
                         });
                 });
 
             modelBuilder.Entity("OrderConsoleApp.Entities.OrderItem", b =>
                 {
-                    b.HasOne("OrderConsoleApp.Entities.Order", null)
+                    b.HasOne("OrderConsoleApp.Entities.Order", "Order")
                         .WithMany("OrderItems")
-                        .HasForeignKey("OrderId");
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("OrderConsoleApp.Entities.Order", b =>

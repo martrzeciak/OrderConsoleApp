@@ -3,7 +3,7 @@
 public class Order : BaseEntity
 {
     public DateTime OrderDate { get; set; } = DateTime.UtcNow;
-    public List<OrderItem> OrderItems { get; set; } = [];
     public decimal Subtotal { get; set; }
     public decimal Total { get; set; }
+    public List<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 }

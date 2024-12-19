@@ -1,11 +1,10 @@
-﻿using OrderConsoleApp;
-using Microsoft.Extensions.Hosting;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using OrderConsoleApp.Data;
-using Microsoft.EntityFrameworkCore;
+using OrderConsoleApp;
 using OrderConsoleApp.Contracts;
-using OrderConsoleApp.Repositories;
+using OrderConsoleApp.Data;
 
 using IHost host = CreateHostBuilder(args).Build();
 using var scope = host.Services.CreateScope();
@@ -26,7 +25,7 @@ catch (Exception ex)
 
 try
 {
-   await services.GetRequiredService<App>().Run(args);
+    await services.GetRequiredService<App>().Run(args);
 }
 catch (Exception ex)
 {
@@ -43,8 +42,7 @@ static IHostBuilder CreateHostBuilder(string[] args)
 
             services.AddScoped<App>();
 
-            services.AddScoped<IProductRepository, ProductRepository>();
-            services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
         }).ConfigureLogging((_, logging) =>
         {
             // Disable EF logs

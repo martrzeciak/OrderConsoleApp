@@ -18,6 +18,12 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.Entity<Order>()
+            .HasMany(o => o.OrderItems)
+            .WithOne(o => o.Order)
+            .HasForeignKey(oi => oi.OrderId)
+            .OnDelete(DeleteBehavior.Cascade);
+
         // Seed initial data for the Products table
         modelBuilder.Entity<Product>().HasData(
             new Product { Id = 1, Name = "Laptop", Price = 2500 },
